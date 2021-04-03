@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>http://xyf007.ml</id>
     <title>虫合&apos;s Blog</title>
-    <updated>2021-04-03T04:54:37.178Z</updated>
+    <updated>2021-04-03T05:10:21.558Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="http://xyf007.ml"/>
     <link rel="self" href="http://xyf007.ml/atom.xml"/>
@@ -11,35 +11,1321 @@
     <icon>http://xyf007.ml/favicon.ico</icon>
     <rights>All rights reserved 2021, 虫合&apos;s Blog</rights>
     <entry>
-        <title type="html"><![CDATA[Hello Gridea]]></title>
-        <id>http://xyf007.ml/post/hello-gridea/</id>
-        <link href="http://xyf007.ml/post/hello-gridea/">
+        <title type="html"><![CDATA[【模板】广义后缀自动机（广义 SAM）]]></title>
+        <id>http://xyf007.ml/post/mu-ban-guang-yi-hou-zhui-zi-dong-ji-guang-yi-sam/</id>
+        <link href="http://xyf007.ml/post/mu-ban-guang-yi-hou-zhui-zi-dong-ji-guang-yi-sam/">
         </link>
-        <updated>2018-12-11T16:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <updated>2021-03-24T11:32:39.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+int n;
+char s[1000001];
+class GeneralSuffixAutomaton {
+ public:
+  struct Node {
+    int len, link, nxt[26];
+  } t_[2000001];
+  int sz_, last_;
+  GeneralSuffixAutomaton() { t_[0].link = -1; }
+  void Expand(char);
+  void Build(const char *);
+  ~GeneralSuffixAutomaton() {}
+} S;
+
+void GeneralSuffixAutomaton::Expand(char c) {
+  int p = last_;
+  if (t_[p].nxt[c - 'a']) {
+    int q = t_[p].nxt[c - 'a'];
+    if (t_[q].len == t_[p].len + 1) {
+      last_ = q;
+    } else {
+      int nq = ++sz_;
+      t_[nq].len = t_[p].len + 1;
+      t_[nq].link = t_[q].link;
+      std::memcpy(t_[nq].nxt, t_[q].nxt, sizeof(t_[nq].nxt));
+      while (p != -1 &amp;&amp; t_[p].nxt[c - 'a'] == q) {
+        t_[p].nxt[c - 'a'] = nq;
+        p = t_[p].link;
+      }
+      t_[q].link = nq;
+      last_ = nq;
+    }
+    return;
+  }
+  int cur = ++sz_;
+  t_[cur].len = t_[p].len + 1;
+  while (p != -1 &amp;&amp; !t_[p].nxt[c - 'a']) {
+    t_[p].nxt[c - 'a'] = cur;
+    p = t_[p].link;
+  }
+  if (p == -1) {
+    t_[cur].link = 0;
+  } else {
+    int q = t_[p].nxt[c - 'a'];
+    if (t_[q].len == t_[p].len + 1) {
+      t_[cur].link = q;
+    } else {
+      int nq = ++sz_;
+      t_[nq].len = t_[p].len + 1;
+      t_[nq].link = t_[q].link;
+      std::memcpy(t_[nq].nxt, t_[q].nxt, sizeof(t_[q].nxt));
+      while (p != -1 &amp;&amp; t_[p].nxt[c - 'a'] == q) {
+        t_[p].nxt[c - 'a'] = nq;
+        p = t_[p].link;
+      }
+      t_[cur].link = t_[q].link = nq;
+    }
+  }
+  last_ = cur;
+}
+
+void GeneralSuffixAutomaton::Build(const char *s) {
+  last_ = 0;
+  std::size_t n = std::strlen(s);
+  for (std::size_t i = 0; i &lt; n; i++) {
+    Expand(s[i]);
+  }
+}
+int main(int argc, char const *argv[]) {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::cin &gt;&gt; n;
+  for (int i = 1; i &lt;= n; i++) {
+    std::cin &gt;&gt; s;
+    S.Build(s);
+  }
+  long long ans = 0LL;
+  for (int i = 1; i &lt;= S.sz_; i++) {
+    ans += S.t_[i].len - S.t_[S.t_[i].link].len;
+  }
+  std::cout &lt;&lt; ans;
+  return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】李超树]]></title>
+        <id>http://xyf007.ml/post/mu-ban-li-chao-shu/</id>
+        <link href="http://xyf007.ml/post/mu-ban-li-chao-shu/">
+        </link>
+        <updated>2021-02-26T10:25:59.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;numeric&gt;
+constexpr int kMod = 39989, kMody = 1e9;
+struct Segment
+{
+    int id;
+    double k, b;
+    Segment(int id = 0, double k = 0.0, double b = 0.0) : id(id), k(k), b(b) {}
+} t[200001];
+double F(Segment s, int x) { return s.k * x + s.b; }
+int n;
+void Modify(int L, int R, int l, int r, Segment v, int x)
+{
+    int mid = (l + r) &gt;&gt; 1;
+    if (L &lt;= l &amp;&amp; r &lt;= R)
+    {
+        if (F(t[x], mid) &lt; F(v, mid) || !t[x].id)
+        {
+            std::swap(t[x], v);
+        }
+        double p = (v.b - t[x].b) / (t[x].k - v.k);
+        if (l == r || t[x].k == v.k || p &lt; l || p &gt; r || !v.id)
+        {
+            return;
+        }
+        if (v.k &lt; t[x].k)
+        {
+            Modify(L, R, l, mid, v, x + x);
+        }
+        else
+        {
+            Modify(L, R, mid + 1, r, v, x + x + 1);
+        }
+        return;
+    }
+    if (L &lt;= mid)
+    {
+        Modify(L, R, l, mid, v, x + x);
+    }
+    if (R &gt; mid)
+    {
+        Modify(L, R, mid + 1, r, v, x + x + 1);
+    }
+}
+Segment Query(int l, int r, int p, int x)
+{
+    if (l == r)
+    {
+        return t[x];
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    Segment res;
+    if (p &lt;= mid)
+    {
+        res = Query(l, mid, p, x + x);
+    }
+    else
+    {
+        res = Query(mid + 1, r, p, x + x + 1);
+    }
+    return F(res, p) &gt; F(t[x], p) ? res : t[x];
+}
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::cin &gt;&gt; n;
+    int lastans = 0, op, x0, x1, y0, y1, k, tot = 0;
+    auto decode = [&amp;lastans](int &amp;x, const int &amp;mod) -&gt; void {
+        x = (x + lastans - 1) % mod + 1;
+    };
+    for (int i = 1; i &lt;= n; i++)
+    {
+        std::cin &gt;&gt; op;
+        if (!op)
+        {
+            std::cin &gt;&gt; k;
+            decode(k, kMod);
+            std::cout &lt;&lt; (lastans = Query(1, kMod, k, 1).id) &lt;&lt; '\n';
+        }
+        else
+        {
+            std::cin &gt;&gt; x0 &gt;&gt; y0 &gt;&gt; x1 &gt;&gt; y1;
+            decode(x0, kMod);
+            decode(y0, kMody);
+            decode(x1, kMod);
+            decode(y1, kMody);
+            Segment s;
+            s.id = ++tot;
+            if (x0 &gt; x1)
+            {
+                std::swap(x0, x1);
+                std::swap(y0, y1);
+            }
+            if (x0 == x1)
+            {
+                s.k = 0.0;
+                s.b = std::max(y0, y1);
+            }
+            else
+            {
+                s.k = (y1 - y0) / static_cast&lt;double&gt;(x1 - x0);
+                s.b = y0 - s.k * x0;
+            }
+            Modify(x0, x1, 1, kMod, s, 1);
+        }
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】动态 DP]]></title>
+        <id>http://xyf007.ml/post/mu-ban-dong-tai-dp/</id>
+        <link href="http://xyf007.ml/post/mu-ban-dong-tai-dp/">
+        </link>
+        <updated>2021-02-14T06:12:47.000Z</updated>
+        <summary type="html"><![CDATA[<p>线段树维护转移矩阵。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
-✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+        <content type="html"><![CDATA[<p>线段树维护转移矩阵。</p>
 <!-- more -->
-<p><a href="https://github.com/getgridea/gridea">Github</a><br>
-<a href="https://gridea.dev/">Gridea 主页</a><br>
-<a href="http://fehey.com/">示例网站</a></p>
-<h2 id="特性">特性👇</h2>
-<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
-<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
-<p>🏷️  你可以对文章进行标签分组</p>
-<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
-<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
-<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
-<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
-<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
-<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
-<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
-<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
-<p>未来，它一定会成为你离不开的伙伴</p>
-<p>尽情发挥你的才华吧！</p>
-<p>😘 Enjoy~</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;numeric&gt;
+struct Edge
+{
+    int to, nxt;
+} e[200001];
+int n, m, E, head[100001], a[100001], f[100001][2], fa[100001], sz[100001], son[100001], top[100001], bot[100001], dfn[100001], tot, id[100001];
+void checkmax(int &amp;x, int y)
+{
+    if (x &lt; y)
+    {
+        x = y;
+    }
+}
+void Add(int f, int t)
+{
+    e[E].to = t;
+    e[E].nxt = head[f];
+    head[f] = E++;
+}
+class Matrix
+{
+public:
+    int a_[2][2];
+    Matrix() { std::memset(a_, ~0x3f, sizeof(a_)); }
+    Matrix operator*(const Matrix &amp;) const;
+    ~Matrix() {}
+} t[400001], g[100001];
+
+Matrix Matrix::operator*(const Matrix &amp;b) const
+{
+    Matrix s;
+    for (int i = 0; i &lt; 2; i++)
+    {
+        for (int k = 0; k &lt; 2; k++)
+        {
+            for (int j = 0; j &lt; 2; j++)
+            {
+                checkmax(s.a_[i][j], a_[i][k] + b.a_[k][j]);
+            }
+        }
+    }
+    return s;
+}
+void Dfs(int u, int f)
+{
+    sz[u] = 1;
+    fa[u] = f;
+    for (int i = head[u]; i != -1; i = e[i].nxt)
+    {
+        int v = e[i].to;
+        if (v == f)
+        {
+            continue;
+        }
+        Dfs(v, u);
+        sz[u] += sz[v];
+        if (sz[v] &gt; sz[son[u]])
+        {
+            son[u] = v;
+        }
+    }
+}
+void Dfs2(int u, int t)
+{
+    id[dfn[u] = ++tot] = u;
+    top[u] = t;
+    checkmax(bot[t], tot);
+    f[u][1] = g[u].a_[1][0] = a[u];
+    g[u].a_[0][0] = g[u].a_[0][1] = 0;
+    if (son[u])
+    {
+        Dfs2(son[u], t);
+        f[u][0] += std::max(f[son[u]][0], f[son[u]][1]);
+        f[u][1] += f[son[u]][0];
+    }
+    for (int i = head[u]; i != -1; i = e[i].nxt)
+    {
+        int v = e[i].to;
+        if (v == fa[u] || v == son[u])
+        {
+            continue;
+        }
+        Dfs2(v, v);
+        f[u][0] += std::max(f[v][0], f[v][1]);
+        f[u][1] += f[v][0];
+        g[u].a_[0][0] = g[u].a_[0][1] += std::max(f[v][0], f[v][1]);
+        g[u].a_[1][0] += f[v][0];
+    }
+}
+void Pushup(int x)
+{
+    t[x] = t[x + x] * t[x + x + 1];
+}
+void Build(int l, int r, int x)
+{
+    if (l == r)
+    {
+        t[x] = g[id[l]];
+        return;
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    Build(l, mid, x + x);
+    Build(mid + 1, r, x + x + 1);
+    Pushup(x);
+}
+void Modify(int l, int r, int p, int x)
+{
+    if (l == r)
+    {
+        t[x] = g[id[p]];
+        return;
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    if (p &lt;= mid)
+    {
+        Modify(l, mid, p, x + x);
+    }
+    else
+    {
+        Modify(mid + 1, r, p, x + x + 1);
+    }
+    Pushup(x);
+}
+Matrix Query(int L, int R, int l, int r, int x)
+{
+    if (L &lt;= l &amp;&amp; r &lt;= R)
+    {
+        return t[x];
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    if (L &gt; mid)
+    {
+        return Query(L, R, mid + 1, r, x + x + 1);
+    }
+    else if (R &lt;= mid)
+    {
+        return Query(L, R, l, mid, x + x);
+    }
+    else
+    {
+        return Query(L, R, l, mid, x + x) * Query(L, R, mid + 1, r, x + x + 1);
+    }
+}
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::memset(head, -1, sizeof(head));
+    std::cin &gt;&gt; n &gt;&gt; m;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        std::cin &gt;&gt; a[i];
+    }
+    for (int i = 1; i &lt; n; i++)
+    {
+        int u, v;
+        std::cin &gt;&gt; u &gt;&gt; v;
+        Add(u, v);
+        Add(v, u);
+    }
+    Dfs(1, 0);
+    Dfs2(1, 1);
+    Build(1, n, 1);
+    for (int i = 1; i &lt;= m; i++)
+    {
+        int x, y;
+        std::cin &gt;&gt; x &gt;&gt; y;
+        g[x].a_[1][0] += y - a[x];
+        a[x] = y;
+        Matrix pre, nxt, ans;
+        while (x)
+        {
+            pre = Query(dfn[top[x]], bot[top[x]], 1, n, 1);
+            Modify(1, n, dfn[x], 1);
+            nxt = Query(dfn[top[x]], bot[top[x]], 1, n, 1);
+            x = fa[top[x]];
+            g[x].a_[0][0] = g[x].a_[0][1] += std::max(nxt.a_[0][0], nxt.a_[1][0]) - std::max(pre.a_[0][0], pre.a_[1][0]);
+            g[x].a_[1][0] += nxt.a_[0][0] - pre.a_[0][0];
+        }
+        ans = Query(1, bot[1], 1, n, 1);
+        std::cout &lt;&lt; std::max(ans.a_[0][0], ans.a_[1][0]) &lt;&lt; '\n';
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】带修莫队]]></title>
+        <id>http://xyf007.ml/post/mu-ban-dai-xiu-mo-dui/</id>
+        <link href="http://xyf007.ml/post/mu-ban-dai-xiu-mo-dui/">
+        </link>
+        <updated>2021-02-09T14:52:03.000Z</updated>
+        <summary type="html"><![CDATA[<p>加一维时间轴，复杂度 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mfrac><mn>5</mn><mn>3</mn></mfrac></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^{\frac{5}{3}})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.20402em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9540200000000001em;"><span style="top:-3.363em;margin-right:0.05em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8443142857142858em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>加一维时间轴，复杂度 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mfrac><mn>5</mn><mn>3</mn></mfrac></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^{\frac{5}{3}})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.20402em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9540200000000001em;"><span style="top:-3.363em;margin-right:0.05em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8443142857142858em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</p>
+<!-- more -->
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;cmath&gt;
+struct Query
+{
+    int l, r, t, id;
+} q[133334];
+struct Modify
+{
+    int x, pre, now;
+} b[133334];
+int n, m, B, a[133334], pos[133334], tot, ans[133334], cnt[1000001];
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::cin &gt;&gt; n &gt;&gt; m;
+    B = std::pow(n, 2.0 / 3.0);
+    for (int i = 1; i &lt;= n; i++)
+    {
+        std::cin &gt;&gt; a[i];
+        pos[i] = (i - 1) / B + 1;
+    }
+    char op[10];
+    int t = 0;
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cin &gt;&gt; op;
+        if (op[0] == 'Q')
+        {
+            tot++;
+            std::cin &gt;&gt; q[tot].l &gt;&gt; q[tot].r;
+            q[tot].t = t;
+            q[tot].id = tot;
+        }
+        else
+        {
+            t++;
+            std::cin &gt;&gt; b[t].x &gt;&gt; b[t].now;
+            b[t].pre = a[b[t].x];
+            a[b[t].x] = b[t].now;
+        }
+    }
+    for (int i = t; i &gt;= 1; i--)
+    {
+        a[b[i].x] = b[i].pre;
+    }
+    t = 0;
+    std::sort(q + 1, q + tot + 1, [](const Query &amp;x, const Query &amp;y) -&gt; bool { return pos[x.l] == pos[y.l] ? pos[x.r] == pos[y.r] ? x.t &lt; y.t : pos[x.r] &lt; pos[y.r] : pos[x.l] &lt; pos[y.l]; });
+    int l = 1, r = 0, sum = 0;
+    for (int i = 1; i &lt;= tot; i++)
+    {
+        while (l &gt; q[i].l)
+        {
+            sum += !cnt[a[--l]]++;
+        }
+        while (r &lt; q[i].r)
+        {
+            sum += !cnt[a[++r]]++;
+        }
+        while (l &lt; q[i].l)
+        {
+            sum -= !--cnt[a[l++]];
+        }
+        while (r &gt; q[i].r)
+        {
+            sum -= !--cnt[a[r--]];
+        }
+        while (t &lt; q[i].t)
+        {
+            t++;
+            if (b[t].x &gt;= l &amp;&amp; b[t].x &lt;= r)
+            {
+                sum -= !--cnt[a[b[t].x]];
+                sum += !cnt[b[t].now]++;
+            }
+            a[b[t].x] = b[t].now;
+        }
+        while (t &gt; q[i].t)
+        {
+            if (b[t].x &gt;= l &amp;&amp; b[t].x &lt;= r)
+            {
+                sum -= !--cnt[a[b[t].x]];
+                sum += !cnt[b[t].pre]++;
+            }
+            a[b[t].x] = b[t].pre;
+            t--;
+        }
+        ans[q[i].id] = sum;
+    }
+    for (int i = 1; i &lt;= tot; i++)
+    {
+        std::cout &lt;&lt; ans[i] &lt;&lt; '\n';
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】树上莫队]]></title>
+        <id>http://xyf007.ml/post/mu-ban-shu-shang-mo-dui/</id>
+        <link href="http://xyf007.ml/post/mu-ban-shu-shang-mo-dui/">
+        </link>
+        <updated>2021-02-09T14:51:05.000Z</updated>
+        <summary type="html"><![CDATA[<p>把树变成欧拉序（括号序）然后莫队。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>把树变成欧拉序（括号序）然后莫队。</p>
+<!-- more -->
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;cmath&gt;
+struct Edge
+{
+    int to, nxt;
+} e[80001];
+struct Query
+{
+    int l, r, id, lca;
+} q[100001];
+int n, m, E, head[40001], a[40001], b[40001], dfn[80001], in[40001], out[40001], tot, dep[40001], fa[40001], top[40001], sz[40001], son[40001], vis[40001], B, pos[80001], cnt[40001], ans[100001], sum;
+void Add(int f, int t)
+{
+    e[E].to = t;
+    e[E].nxt = head[f];
+    head[f] = E++;
+}
+void Dfs(int u, int f)
+{
+    dep[u] = dep[f] + 1;
+    fa[u] = f;
+    sz[u] = 1;
+    dfn[in[u] = ++tot] = u;
+    for (int i = head[u]; i != -1; i = e[i].nxt)
+    {
+        int v = e[i].to;
+        if (v == f)
+        {
+            continue;
+        }
+        Dfs(v, u);
+        sz[u] += sz[v];
+        if (sz[v] &gt; sz[son[u]])
+        {
+            son[u] = v;
+        }
+    }
+    dfn[out[u] = ++tot] = u;
+}
+void Dfs2(int u, int t)
+{
+    top[u] = t;
+    if (son[u])
+    {
+        Dfs2(son[u], t);
+    }
+    for (int i = head[u]; i != -1; i = e[i].nxt)
+    {
+        int v = e[i].to;
+        if (v == fa[u] || v == son[u])
+        {
+            continue;
+        }
+        Dfs2(v, v);
+    }
+}
+int GetLca(int u, int v)
+{
+    while (top[u] != top[v])
+    {
+        if (dep[top[u]] &lt; dep[top[v]])
+        {
+            std::swap(u, v);
+        }
+        u = fa[top[u]];
+    }
+    return dep[u] &lt; dep[v] ? u : v;
+}
+void Modify(int x)
+{
+    if (vis[x] ^= 1)
+    {
+        sum += !cnt[a[x]]++;
+    }
+    else
+    {
+        sum -= !--cnt[a[x]];
+    }
+}
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::memset(head, -1, sizeof(head));
+    std::cin &gt;&gt; n &gt;&gt; m;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        std::cin &gt;&gt; a[i];
+    }
+    std::memcpy(b + 1, a + 1, 4 * n);
+    std::sort(b + 1, b + n + 1);
+    int nn = std::unique(b + 1, b + n + 1) - b - 1;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        a[i] = std::lower_bound(b + 1, b + nn + 1, a[i]) - b;
+    }
+    for (int i = 1; i &lt; n; i++)
+    {
+        int u, v;
+        std::cin &gt;&gt; u &gt;&gt; v;
+        Add(u, v);
+        Add(v, u);
+    }
+    Dfs(1, 0);
+    Dfs2(1, 1);
+    B = std::sqrt(n &lt;&lt; 1);
+    for (int i = 1; i &lt;= 2 * n; i++)
+    {
+        pos[i] = (i - 1) / B + 1;
+    }
+    for (int i = 1; i &lt;= m; i++)
+    {
+        int u, v, lca;
+        std::cin &gt;&gt; u &gt;&gt; v;
+        q[i].id = i;
+        if (in[u] &gt; in[v])
+        {
+            std::swap(u, v);
+        }
+        lca = GetLca(u, v);
+        if (u == lca)
+        {
+            q[i].l = in[u];
+            q[i].r = in[v];
+        }
+        else
+        {
+            q[i].l = out[u];
+            q[i].r = in[v];
+            q[i].lca = lca;
+        }
+    }
+    std::sort(q + 1, q + m + 1, [](const Query &amp;x, const Query &amp;y) -&gt; bool { return pos[x.l] == pos[y.l] ? x.r &lt; y.r : pos[x.l] &lt; pos[y.l]; });
+    int l = 1, r = 0;
+    for (int i = 1; i &lt;= m; i++)
+    {
+        while (l &gt; q[i].l)
+        {
+            Modify(dfn[--l]);
+        }
+        while (r &lt; q[i].r)
+        {
+            Modify(dfn[++r]);
+        }
+        while (l &lt; q[i].l)
+        {
+            Modify(dfn[l++]);
+        }
+        while (r &gt; q[i].r)
+        {
+            Modify(dfn[r--]);
+        }
+        if (q[i].lca)
+        {
+            Modify(q[i].lca);
+        }
+        ans[q[i].id] = sum;
+        if (q[i].lca)
+        {
+            Modify(q[i].lca);
+        }
+    }
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cout &lt;&lt; ans[i] &lt;&lt; '\n';
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】线段树分治]]></title>
+        <id>http://xyf007.ml/post/mu-ban-xian-duan-shu-fen-zhi/</id>
+        <link href="http://xyf007.ml/post/mu-ban-xian-duan-shu-fen-zhi/">
+        </link>
+        <updated>2021-02-07T10:36:35.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;vector&gt;
+#include &lt;numeric&gt;
+struct Edge
+{
+    int u, v;
+} e[200001];
+int n, m, k;
+std::vector&lt;int&gt; v[400001];
+class DisjointSet
+{
+private:
+    int fa_[200001], s_[200001], top_, sz_[200001];
+
+public:
+    DisjointSet() {}
+    void Init();
+    int Find(int);
+    void Merge(int, int);
+    void Undo();
+    ~DisjointSet() {}
+    friend void Dfs(int, int, int);
+} T;
+
+void DisjointSet::Init()
+{
+    std::iota(fa_ + 1, fa_ + 2 * n + 1, 1);
+    std::fill(sz_ + 1, sz_ + 2 * n + 1, 1);
+}
+
+int DisjointSet::Find(int x)
+{
+    while (x != fa_[x])
+    {
+        x = fa_[x];
+    }
+    return x;
+}
+
+void DisjointSet::Merge(int x, int y)
+{
+    x = Find(x);
+    y = Find(y);
+    if (x == y)
+    {
+        return;
+    }
+    if (sz_[x] &gt; sz_[y])
+    {
+        std::swap(x, y);
+    }
+    s_[++top_] = x;
+    sz_[y] += sz_[x];
+    fa_[x] = y;
+}
+
+void DisjointSet::Undo()
+{
+    int x = s_[top_--];
+    sz_[fa_[x]] -= sz_[x];
+    fa_[x] = x;
+}
+void Insert(int L, int R, int l, int r, int val, int x)
+{
+    if (L &lt;= l &amp;&amp; r &lt;= R)
+    {
+        v[x].emplace_back(val);
+        return;
+    }
+    int mid = (l + r) &gt;&gt; 1;
+    if (L &lt;= mid)
+    {
+        Insert(L, R, l, mid, val, x + x);
+    }
+    if (R &gt; mid)
+    {
+        Insert(L, R, mid + 1, r, val, x + x + 1);
+    }
+}
+void Dfs(int l, int r, int x)
+{
+    bool f = true;
+    int top = T.top_;
+    for (auto &amp;&amp;i : v[x])
+    {
+        int fu = T.Find(e[i].u), fv = T.Find(e[i].v);
+        if (fu == fv)
+        {
+            for (int j = l; j &lt;= r; j++)
+            {
+                std::cout &lt;&lt; &quot;No\n&quot;;
+            }
+            f = false;
+            break;
+        }
+        T.Merge(fu, T.Find(e[i].v + n));
+        T.Merge(fv, T.Find(e[i].u + n));
+    }
+    if (f)
+    {
+        if (l == r)
+        {
+            std::cout &lt;&lt; &quot;Yes\n&quot;;
+        }
+        else
+        {
+            int mid = (l + r) &gt;&gt; 1;
+            Dfs(l, mid, x + x);
+            Dfs(mid + 1, r, x + x + 1);
+        }
+    }
+    while (T.top_ &gt; top)
+    {
+        T.Undo();
+    }
+}
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;
+    int l, r;
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cin &gt;&gt; e[i].u &gt;&gt; e[i].v &gt;&gt; l &gt;&gt; r;
+        if (l == r)
+        {
+            continue;
+        }
+        Insert(l + 1, r, 1, k, i, 1);
+    }
+    T.Init();
+    Dfs(1, k, 1);
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】莫队二次离线]]></title>
+        <id>http://xyf007.ml/post/mu-ban-mo-dui-er-ci-li-xian/</id>
+        <link href="http://xyf007.ml/post/mu-ban-mo-dui-er-ci-li-xian/">
+        </link>
+        <updated>2021-02-07T10:34:39.000Z</updated>
+        <summary type="html"><![CDATA[<p>将贡献差分，打标记，要手推式子。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>将贡献差分，打标记，要手推式子。</p>
+<!-- more -->
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+#include &lt;numeric&gt;
+struct Query
+{
+    int l, r, id;
+    long long ans;
+} q[100001];
+struct Node
+{
+    int l, r, id, op;
+    Node(int l = 0, int r = 0, int id = 0, int op = 0) : l(l), r(r), id(id), op(op) {}
+};
+int n, m, B, tot, k, a[100001], pos[100001], pre[100001], cnt[16384];
+std::vector&lt;int&gt; v;
+std::vector&lt;Node&gt; b[100001];
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;
+    if (k &gt; 14)
+    {
+        for (int i = 1; i &lt;= m; i++)
+        {
+            std::cout &lt;&lt; &quot;0\n&quot;;
+        }
+        return 0;
+    }
+    B = std::sqrt(n);
+    tot = (n - 1) / B + 1;
+    for (int i = 0; i &lt; 16384; i++)
+    {
+        if (__builtin_popcount(i) == k)
+        {
+            v.emplace_back(i);
+        }
+    }
+    for (int i = 1; i &lt;= n; i++)
+    {
+        std::cin &gt;&gt; a[i];
+        pos[i] = (i - 1) / B + 1;
+    }
+    for (int i = 1; i &lt;= n; i++)
+    {
+        pre[i] = cnt[a[i]];
+        for (auto &amp;&amp;j : v)
+        {
+            cnt[j ^ a[i]]++;
+        }
+    }
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cin &gt;&gt; q[i].l &gt;&gt; q[i].r;
+        q[i].id = i;
+    }
+    std::sort(q + 1, q + m + 1, [](const Query &amp;x, const Query &amp;y) -&gt; bool { return pos[x.l] == pos[y.l] ? x.r &lt; y.r : pos[x.l] &lt; pos[y.l]; });
+    int l = 1, r = 0;
+    for (int i = 1; i &lt;= m; i++)
+    {
+        if (l &gt; q[i].l)
+        {
+            b[r].emplace_back(q[i].l, l - 1, i, 1);
+        }
+        while (l &gt; q[i].l)
+        {
+            q[i].ans -= pre[--l];
+        }
+        if (r &lt; q[i].r)
+        {
+            b[l - 1].emplace_back(r + 1, q[i].r, i, -1);
+        }
+        while (r &lt; q[i].r)
+        {
+            q[i].ans += pre[++r];
+        }
+        if (l &lt; q[i].l)
+        {
+            b[r].emplace_back(l, q[i].l - 1, i, -1);
+        }
+        while (l &lt; q[i].l)
+        {
+            q[i].ans += pre[l++];
+        }
+        if (r &gt; q[i].r)
+        {
+            b[l - 1].emplace_back(q[i].r + 1, r, i, 1);
+        }
+        while (r &gt; q[i].r)
+        {
+            q[i].ans -= pre[r--];
+        }
+    }
+    std::memset(cnt, 0, sizeof(cnt));
+    for (int i = 1; i &lt;= n; i++)
+    {
+        for (auto &amp;&amp;j : v)
+        {
+            cnt[a[i] ^ j]++;
+        }
+        for (auto &amp;&amp;j : b[i])
+        {
+            for (int o = j.l; o &lt;= j.r; o++)
+            {
+                if (o &lt; i &amp;&amp; !k)
+                {
+                    q[j.id].ans += j.op * (cnt[a[o]] - 1);
+                }
+                else
+                {
+                    q[j.id].ans += j.op * cnt[a[o]];
+                }
+            }
+        }
+    }
+    for (int i = 1; i &lt;= m; i++)
+    {
+        q[i].ans += q[i - 1].ans;
+    }
+    std::sort(q + 1, q + m + 1, [](const Query &amp;x, const Query &amp;y) -&gt; bool { return x.id &lt; y.id; });
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cout &lt;&lt; q[i].ans &lt;&lt; '\n';
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】回滚莫队]]></title>
+        <id>http://xyf007.ml/post/mu-ban-hui-gun-mo-dui/</id>
+        <link href="http://xyf007.ml/post/mu-ban-hui-gun-mo-dui/">
+        </link>
+        <updated>2021-02-06T12:32:20.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;cmath&gt;
+struct Query
+{
+    int l, r, id;
+} q[200001];
+int n, m, B, tot, a[200001], b[200001], pos[200001], L[501], R[501], fst[200001], lst[200001], c[200001], cnt, ans[200001];
+template &lt;typename T&gt;
+void Read(T &amp;x)
+{
+    x = 0;
+    char c = getchar();
+    while (c &lt; '0' || c &gt; '9')
+    {
+        c = getchar();
+    }
+    x = c - '0';
+    while ((c = getchar()) &gt;= '0' &amp;&amp; c &lt;= '9')
+    {
+        x = x * 10 + c - '0';
+    }
+}
+template &lt;typename T, typename... Args&gt;
+void Read(T &amp;x, Args &amp;...args)
+{
+    Read(x);
+    Read(args...);
+}
+void checkmax(int &amp;x, int y)
+{
+    if (x &lt; y)
+    {
+        x = y;
+    }
+}
+int Calc(int l, int r)
+{
+    int ans = 0;
+    for (int i = l; i &lt;= r; i++)
+    {
+        if (!fst[a[i]])
+        {
+            fst[a[i]] = i;
+        }
+        else
+        {
+            checkmax(ans, i - fst[a[i]]);
+        }
+    }
+    for (int i = l; i &lt;= r; i++)
+    {
+        fst[a[i]] = 0;
+    }
+    return ans;
+}
+int main(int argc, char const *argv[])
+{
+    Read(n);
+    B = std::sqrt(n);
+    tot = (n - 1) / B + 1;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        Read(a[i]);
+        pos[i] = (i - 1) / B + 1;
+    }
+    for (int i = 1; i &lt; tot; i++)
+    {
+        L[i] = (i - 1) * B + 1;
+        R[i] = i * B;
+    }
+    L[tot] = (tot - 1) * B + 1;
+    R[tot] = n;
+    std::memcpy(b + 1, a + 1, 4 * n);
+    std::sort(b + 1, b + n + 1);
+    int nn = std::unique(b + 1, b + n + 1) - b - 1;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        a[i] = std::lower_bound(b + 1, b + nn + 1, a[i]) - b;
+    }
+    Read(m);
+    for (int i = 1; i &lt;= m; i++)
+    {
+        Read(q[i].l, q[i].r);
+        q[i].id = i;
+    }
+    std::sort(q + 1, q + m + 1, [](const Query &amp;x, const Query &amp;y) -&gt; bool { return pos[x.l] == pos[y.l] ? x.r &lt; y.r : pos[x.l] &lt; pos[y.l]; });
+    int p = 1;
+    for (int i = 1; i &lt;= tot; i++)
+    {
+        int l = R[i] + 1, r = R[i], max = 0;
+        cnt = 0;
+        while (p &lt;= m &amp;&amp; pos[q[p].l] == i)
+        {
+            if (pos[q[p].r] == i)
+            {
+                ans[q[p].id] = Calc(q[p].l, q[p].r);
+            }
+            else
+            {
+                while (r &lt; q[p].r)
+                {
+                    r++;
+                    lst[a[r]] = r;
+                    if (!fst[a[r]])
+                    {
+                        fst[a[r]] = r;
+                        c[++cnt] = a[r];
+                    }
+                    checkmax(max, r - fst[a[r]]);
+                }
+                int tmp = max;
+                while (l &gt; q[p].l)
+                {
+                    l--;
+                    if (!lst[a[l]])
+                    {
+                        lst[a[l]] = l;
+                    }
+                    else
+                    {
+                        checkmax(max, lst[a[l]] - l);
+                    }
+                }
+                ans[q[p].id] = max;
+                while (l &lt;= R[i])
+                {
+                    if (lst[a[l]] == l)
+                    {
+                        lst[a[l]] = 0;
+                    }
+                    l++;
+                }
+                max = tmp;
+            }
+            p++;
+        }
+        for (int i = 1; i &lt;= cnt; i++)
+        {
+            fst[c[i]] = lst[c[i]] = 0;
+        }
+    }
+    for (int i = 1; i &lt;= m; i++)
+    {
+        std::cout &lt;&lt; ans[i] &lt;&lt; '\n';
+    }
+    return 0;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【学习笔记】Burnside 引理]]></title>
+        <id>http://xyf007.ml/post/xue-xi-bi-ji-burnside-yin-li/</id>
+        <link href="http://xyf007.ml/post/xue-xi-bi-ji-burnside-yin-li/">
+        </link>
+        <updated>2021-02-02T14:47:09.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="burnside-引理学习笔记">Burnside 引理学习笔记</h1>
+<h2 id="前言">前言</h2>
+<p>略去所有的定义及证明，只考虑如何用来解题。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="burnside-引理学习笔记">Burnside 引理学习笔记</h1>
+<h2 id="前言">前言</h2>
+<p>略去所有的定义及证明，只考虑如何用来解题。</p>
+<!-- more -->
+<h2 id="正题">正题</h2>
+<p>设 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi></mrow><annotation encoding="application/x-tex">G</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span></span></span></span> 是一个作用在集合 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span></span></span></span> 上的有限群。对 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mo>∈</mo><mi>G</mi></mrow><annotation encoding="application/x-tex">g \in G</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7335400000000001em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span></span></span></span>，设 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>X</mi><mi>g</mi></msup></mrow><annotation encoding="application/x-tex">X^g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span></span></span></span></span></span></span></span> 表示 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span></span></span></span> 中在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi></mrow><annotation encoding="application/x-tex">g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">g</span></span></span></span> 作用下的不动元素（也称轨道数），则表示 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi></mrow><annotation encoding="application/x-tex">G</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">G</span></span></span></span> 作用在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span></span></span></span> 上产生的所有等价类的集合 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi><mi mathvariant="normal">/</mi><mi>G</mi></mrow><annotation encoding="application/x-tex">X/G</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mord">/</span><span class="mord mathdefault">G</span></span></span></span> 满足:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">∣</mi><mi>X</mi><mi mathvariant="normal">/</mi><mi>G</mi><mi mathvariant="normal">∣</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mi mathvariant="normal">∣</mi><mi>G</mi><mi mathvariant="normal">∣</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mi>g</mi><mo>∈</mo><mi>G</mi></mrow></munder><mi mathvariant="normal">∣</mi><msup><mi>X</mi><mi>g</mi></msup><mi mathvariant="normal">∣</mi></mrow><annotation encoding="application/x-tex">|X/G|=\dfrac{1}{|G|}\sum\limits_{g \in G}|X^g| 
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mord">/</span><span class="mord mathdefault">G</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.751884em;vertical-align:-1.430444em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">∣</span><span class="mord mathdefault">G</span><span class="mord">∣</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.050005em;"><span style="top:-1.8556639999999998em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span><span class="mrel mtight">∈</span><span class="mord mathdefault mtight">G</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.430444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">∣</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.714392em;"><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span></span></span></span></span><span class="mord">∣</span></span></span></span></span></p>
+<p><strong>例：</strong></p>
+<blockquote>
+<p>给长度为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span> 的环用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">m</span></span></span></span> 种颜色染色，求本质不同方案数。</p>
+</blockquote>
+<p>将旋转操作作为置换群中的元素，求出每一种置换对应的不动点数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>gcd</mi><mo>⁡</mo><mo>(</mo><mi>n</mi><mo separator="true">,</mo><mi>i</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">\gcd(n,i)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span style="margin-right:0.01389em;">g</span>cd</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">i</span><span class="mclose">)</span></span></span></span>。<br>
+故答案为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mi>n</mi></mfrac><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></msubsup><msup><mi>m</mi><mrow><mi>gcd</mi><mo>⁡</mo><mo>(</mo><mi>n</mi><mo separator="true">,</mo><mi>i</mi><mo>)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">\dfrac{1}{n}\sum_{i=1}^nm^{\gcd(n,i)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.00744em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.804292em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29971000000000003em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mop mtight"><span style="margin-right:0.01389em;">g</span>cd</span><span class="mopen mtight">(</span><span class="mord mathdefault mtight">n</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight">i</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span>。</p>
+<p><strong>重要的一点：</strong> 一个轨道内所有的元素是一样的。</p>
+<h3 id="奥妙重重的立体置换群">奥妙重重的立体置换群</h3>
+<blockquote>
+<p>给一个立方体染色方案数。</p>
+</blockquote>
+<p>三维空间的旋转有多种，面的中心、棱的中心、顶点的中心连线都可以做对称轴。<br>
+转的角度可以考虑平面展开图。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">旋转</th>
+<th style="text-align:center">角度</th>
+<th style="text-align:center">数量</th>
+<th style="text-align:center">面</th>
+<th style="text-align:center">棱</th>
+<th style="text-align:center">点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">不转</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>0</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">0\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn></mrow><annotation encoding="application/x-tex">1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">(1)^6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>12</mn></msup></mrow><annotation encoding="application/x-tex">(1)^{12}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>8</mn></msup></mrow><annotation encoding="application/x-tex">(1)^8</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">面面</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>90</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">90\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">9</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>3</mn></mrow><annotation encoding="application/x-tex">3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(4)^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">(4)^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(4)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">面面</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>180</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">180\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">8</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>3</mn></mrow><annotation encoding="application/x-tex">3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(2)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">(2)^6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">(2)^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">面面</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>270</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">270\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord">7</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>3</mn></mrow><annotation encoding="application/x-tex">3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(4)^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">(4)^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>4</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(4)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">4</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">棱棱</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>180</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">180\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">8</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>6</mn></mrow><annotation encoding="application/x-tex">6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">6</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">(2)^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>5</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(2)^5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>2</mn><msup><mo>)</mo><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">(2)^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">2</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">点点</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>120</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">120\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">2</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>4</mn></mrow><annotation encoding="application/x-tex">4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">4</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(3)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">(3)^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(3)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">点点</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>240</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">240\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">2</span><span class="mord">4</span><span class="mord">0</span><span class="mord">°</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>4</mn></mrow><annotation encoding="application/x-tex">4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">4</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(3)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">(3)^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mn>1</mn><msup><mo>)</mo><mn>2</mn></msup><mo>(</mo><mn>3</mn><msup><mo>)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(1)^2(3)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">3</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></td>
+</tr>
+</tbody>
+</table>
+<p>立体图形外角和：点数 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>×</mo><mo>(</mo><mn>180</mn><mi mathvariant="normal">°</mi><mo>−</mo><mo>∑</mo><mtext>内角和</mtext><mo>)</mo><mo>=</mo><mn>720</mn><mi mathvariant="normal">°</mi></mrow><annotation encoding="application/x-tex">\times(180\degree-\sum\text{内角和})=720\degree</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">×</span><span class="mopen">(</span><span class="mord">1</span><span class="mord">8</span><span class="mord">0</span><span class="mord">°</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.00001em;vertical-align:-0.25001em;"></span><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord text"><span class="mord cjk_fallback">内角和</span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord">7</span><span class="mord">2</span><span class="mord">0</span><span class="mord">°</span></span></span></span>。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【模板】最小圆覆盖]]></title>
+        <id>http://xyf007.ml/post/mu-ban-zui-xiao-yuan-fu-gai/</id>
+        <link href="http://xyf007.ml/post/mu-ban-zui-xiao-yuan-fu-gai/">
+        </link>
+        <updated>2021-01-04T03:16:42.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">Circle SmallestCircle(const std::vector&lt;Point&gt; &amp;b)
+{
+    std::vector&lt;Point&gt; a(b);
+    std::srand(std::chrono::_V2::steady_clock::now().time_since_epoch().count());
+    std::random_shuffle(a.begin(), a.end());
+    Circle O(a.front());
+    for (size_t i = 1; i &lt; a.size(); i++)
+    {
+        if (!O.InCircle(a.at(i)))
+        {
+            O = Circle(a.at(i));
+            for (size_t j = 0; j &lt; i; j++)
+            {
+                if (!O.InCircle(a.at(j)))
+                {
+                    O = Circle(a.at(i), a.at(j));
+                    for (size_t k = 0; k &lt; j; k++)
+                    {
+                        if (!O.InCircle(a.at(k)))
+                        {
+                            O = Circle(a.at(i), a.at(j), a.at(k));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return O;
+}
+</code></pre>
 ]]></content>
     </entry>
 </feed>
