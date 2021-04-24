@@ -6,7 +6,7 @@
 
 <title>【模板】计算几何代码头 | 虫合&#39;s Blog</title>
 
-<link rel="shortcut icon" href="http://xyf007.ml/favicon.ico?v=1617426588122">
+<link rel="shortcut icon" href="http://xyf007.ml/favicon.ico?v=1619242716368">
 
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="http://xyf007.ml/styles/main.css">
@@ -97,7 +97,7 @@
             
         </div>
         <div style="text-align: center">
-            <form id="gridea-search-form" style="position: relative" data-update="1617426588122" action="/search/index.html">
+            <form id="gridea-search-form" style="position: relative" data-update="1619242716368" action="/search/index.html">
                 <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
                 <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
             </form>
@@ -122,438 +122,350 @@
                     
                 </div>
                 <div class="post-content">
-                    <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;iomanip&gt;
-#include &lt;cstdio&gt;
-#include &lt;algorithm&gt;
-#include &lt;cstring&gt;
-#include &lt;cmath&gt;
-#include &lt;vector&gt;
+                    <pre><code class="language-cpp">#include &lt;algorithm&gt;
 #include &lt;chrono&gt;
+#include &lt;cmath&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
 constexpr double kEps = 1e-8;
 constexpr int kPrecision = 6;
-int Cmp(const double &amp;x)
-{
-    if (std::fabs(x) &lt; kEps)
-    {
-        return 0;
-    }
-    return x &gt;= kEps ? 1 : -1;
+int Cmp(const double &amp;x) {
+  if (std::fabs(x) &lt; kEps) return 0;
+  return x &gt;= kEps ? 1 : -1;
 }
 class Vector;
-class Point
-{
-public:
-    double x_, y_;
-    Point() {}
-    Point(double x, double y) : x_(x), y_(y) {}
-    Point(const std::pair&lt;double, double&gt; &amp;b) : x_(b.first), y_(b.second) {}
-    Point &amp;operator=(const std::pair&lt;double, double&gt; &amp;);
-    Point &amp;operator=(const Point &amp;);
-    Point operator+(const Vector &amp;) const;
-    Point operator-(const Vector &amp;) const;
-    Point &amp;operator+=(const Vector &amp;b) { return *this = *this + b; }
-    Point &amp;operator-=(const Vector &amp;b) { return *this = *this - b; }
-    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Point &amp;);
-    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Point &amp;);
-    ~Point() {}
+class Point {
+ public:
+  double x_, y_;
+  Point() {}
+  Point(double x, double y) : x_(x), y_(y) {}
+  Point(const std::pair&lt;double, double&gt; &amp;b) : x_(b.first), y_(b.second) {}
+  Point &amp;operator=(const std::pair&lt;double, double&gt; &amp;);
+  Point &amp;operator=(const Point &amp;);
+  Point operator+(const Vector &amp;) const;
+  Point operator-(const Vector &amp;) const;
+  Point &amp;operator+=(const Vector &amp;b) { return *this = *this + b; }
+  Point &amp;operator-=(const Vector &amp;b) { return *this = *this - b; }
+  friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Point &amp;);
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Point &amp;);
+  ~Point() {}
 };
-class Vector
-{
-public:
-    double x_, y_;
-    Vector() {}
-    Vector(double x, double y) : x_(x), y_(y) {}
-    Vector(const std::pair&lt;double, double&gt; &amp;b) : x_(b.first), y_(b.second) {}
-    Vector(Point a, Point b)
-    {
-        x_ = b.x_ - a.x_;
-        y_ = b.y_ - a.y_;
-    }
-    double Magnitude() const { return std::hypot(x_, y_); }
-    double PolarAngle() const { return std::atan2(y_, x_); }
-    Vector &amp;operator=(const std::pair&lt;double, double&gt; &amp;);
-    Vector &amp;operator=(const Vector &amp;);
-    Vector operator+(const Vector &amp;) const;
-    Vector operator-(const Vector &amp;) const;
-    Vector operator*(const double &amp;) const;
-    Vector operator/(const double &amp;) const;
-    Vector &amp;operator+=(const Vector &amp;b) { return *this = *this + b; };
-    Vector &amp;operator-=(const Vector &amp;b) { return *this = *this - b; };
-    Vector &amp;operator*=(const double &amp;b) { return *this = *this * b; };
-    Vector &amp;operator/=(const double &amp;b) { return *this = *this / b; };
-    void Rotate(const double &amp;);
-    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Vector &amp;);
-    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Vector &amp;);
-    ~Vector() {}
+class Vector {
+ public:
+  double x_, y_;
+  Vector() {}
+  Vector(double x, double y) : x_(x), y_(y) {}
+  Vector(const std::pair&lt;double, double&gt; &amp;b) : x_(b.first), y_(b.second) {}
+  Vector(Point a, Point b) {
+    x_ = b.x_ - a.x_;
+    y_ = b.y_ - a.y_;
+  }
+  double Magnitude() const { return std::hypot(x_, y_); }
+  double PolarAngle() const { return std::atan2(y_, x_); }
+  Vector &amp;operator=(const std::pair&lt;double, double&gt; &amp;);
+  Vector &amp;operator=(const Vector &amp;);
+  Vector operator+(const Vector &amp;) const;
+  Vector operator-(const Vector &amp;) const;
+  Vector operator*(const double &amp;) const;
+  Vector operator/(const double &amp;) const;
+  Vector &amp;operator+=(const Vector &amp;b) { return *this = *this + b; };
+  Vector &amp;operator-=(const Vector &amp;b) { return *this = *this - b; };
+  Vector &amp;operator*=(const double &amp;b) { return *this = *this * b; };
+  Vector &amp;operator/=(const double &amp;b) { return *this = *this / b; };
+  void Rotate(const double &amp;);
+  friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Vector &amp;);
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Vector &amp;);
+  ~Vector() {}
 };
-class Line
-{
-public:
-    Point p_;
-    Vector v_;
-    Line() {}
-    Line(Point p, Vector v) : p_(p), v_(v) {}
-    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Line &amp;);
-    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Line &amp;);
-    ~Line() {}
+class Line {
+ public:
+  Point p_;
+  Vector v_;
+  Line() {}
+  Line(Point p, Vector v) : p_(p), v_(v) {}
+  friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Line &amp;);
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Line &amp;);
+  ~Line() {}
 };
-class Segment
-{
-public:
-    Point a_, b_;
-    Segment() {}
-    Segment(Point a, Point b) : a_(a), b_(b) {}
-    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Segment &amp;);
-    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Segment &amp;);
-    ~Segment() {}
+class Segment {
+ public:
+  Point a_, b_;
+  Segment() {}
+  Segment(Point a, Point b) : a_(a), b_(b) {}
+  friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Segment &amp;);
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Segment &amp;);
+  ~Segment() {}
 };
-class Circle
-{
-public:
-    Point o_;
-    double r_;
-    Circle() {}
-    Circle(Point o, double r) : o_(o), r_(r) {}
-    Circle(Point A);
-    Circle(Point A, Point B);
-    Circle(Point A, Point B, Point C);
-    Circle(const std::pair&lt;Point, double&gt; &amp;b) : o_(b.first), r_(b.second) {}
-    ~Circle() {}
-    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Circle &amp;);
-    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Circle &amp;);
+class Circle {
+ public:
+  Point o_;
+  double r_;
+  Circle() {}
+  Circle(Point o, double r) : o_(o), r_(r) {}
+  Circle(Point A);
+  Circle(Point A, Point B);
+  Circle(Point A, Point B, Point C);
+  Circle(const std::pair&lt;Point, double&gt; &amp;b) : o_(b.first), r_(b.second) {}
+  ~Circle() {}
+  friend std::istream &amp;operator&gt;&gt;(std::istream &amp;, Circle &amp;);
+  friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;, const Circle &amp;);
 };
 typedef std::vector&lt;Point&gt; Polygon;
-
-Point &amp;Point::operator=(const std::pair&lt;double, double&gt; &amp;b)
-{
-    this-&gt;x_ = b.first;
-    this-&gt;y_ = b.second;
-    return *this;
+Point &amp;Point::operator=(const std::pair&lt;double, double&gt; &amp;b) {
+  this-&gt;x_ = b.first;
+  this-&gt;y_ = b.second;
+  return *this;
 }
-
-Point &amp;Point::operator=(const Point &amp;b)
-{
-    this-&gt;x_ = b.x_;
-    this-&gt;y_ = b.y_;
-    return *this;
+Point &amp;Point::operator=(const Point &amp;b) {
+  this-&gt;x_ = b.x_;
+  this-&gt;y_ = b.y_;
+  return *this;
 }
-
-Point Point::operator+(const Vector &amp;b) const
-{
-    return Point(x_ + b.x_, y_ + b.y_);
+Point Point::operator+(const Vector &amp;b) const {
+  return Point(x_ + b.x_, y_ + b.y_);
 }
-
-Point Point::operator-(const Vector &amp;b) const
-{
-    return Point(x_ - b.x_, y_ - b.y_);
+Point Point::operator-(const Vector &amp;b) const {
+  return Point(x_ - b.x_, y_ - b.y_);
 }
-
-std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Point &amp;a)
-{
-    in &gt;&gt; a.x_ &gt;&gt; a.y_;
-    return in;
+std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Point &amp;a) {
+  in &gt;&gt; a.x_ &gt;&gt; a.y_;
+  return in;
 }
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Point &amp;a)
-{
-    out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.x_ &lt;&lt; ',' &lt;&lt; a.y_;
-    return out;
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Point &amp;a) {
+  out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.x_ &lt;&lt; ',' &lt;&lt; a.y_;
+  return out;
 }
-double Dis(const Point &amp;a, const Point &amp;b)
-{
-    return std::hypot(a.x_ - b.x_, a.y_ - b.y_);
+double Dis(const Point &amp;a, const Point &amp;b) {
+  return std::hypot(a.x_ - b.x_, a.y_ - b.y_);
 }
-
-Vector &amp;Vector::operator=(const std::pair&lt;double, double&gt; &amp;b)
-{
-    this-&gt;x_ = b.first;
-    this-&gt;y_ = b.second;
-    return *this;
+Vector &amp;Vector::operator=(const std::pair&lt;double, double&gt; &amp;b) {
+  this-&gt;x_ = b.first;
+  this-&gt;y_ = b.second;
+  return *this;
 }
-
-Vector &amp;Vector::operator=(const Vector &amp;b)
-{
-    this-&gt;x_ = b.x_;
-    this-&gt;y_ = b.y_;
-    return *this;
+Vector &amp;Vector::operator=(const Vector &amp;b) {
+  this-&gt;x_ = b.x_;
+  this-&gt;y_ = b.y_;
+  return *this;
 }
-
-Vector Vector::operator+(const Vector &amp;b) const
-{
-    return Vector(x_ + b.x_, y_ + b.y_);
+Vector Vector::operator+(const Vector &amp;b) const {
+  return Vector(x_ + b.x_, y_ + b.y_);
 }
-
-Vector Vector::operator-(const Vector &amp;b) const
-{
-    return Vector(x_ - b.x_, y_ - b.y_);
+Vector Vector::operator-(const Vector &amp;b) const {
+  return Vector(x_ - b.x_, y_ - b.y_);
 }
-
-Vector Vector::operator*(const double &amp;b) const
-{
-    return Vector(x_ * b, y_ * b);
+Vector Vector::operator*(const double &amp;b) const {
+  return Vector(x_ * b, y_ * b);
 }
-
-Vector Vector::operator/(const double &amp;b) const
-{
-    return Vector(x_ / b, y_ / b);
+Vector Vector::operator/(const double &amp;b) const {
+  return Vector(x_ / b, y_ / b);
 }
-
-void Vector::Rotate(const double &amp;angle)
-{
-    double x = x_, y = y_;
-    x_ = x * std::cos(angle) - y * std::sin(angle);
-    y_ = x * std::sin(angle) + y * std::cos(angle);
+void Vector::Rotate(const double &amp;angle) {
+  double x = x_, y = y_;
+  x_ = x * std::cos(angle) - y * std::sin(angle);
+  y_ = x * std::sin(angle) + y * std::cos(angle);
 }
-
-std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Vector &amp;a)
-{
-    in &gt;&gt; a.x_ &gt;&gt; a.y_;
-    return in;
+std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Vector &amp;a) {
+  in &gt;&gt; a.x_ &gt;&gt; a.y_;
+  return in;
 }
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Vector &amp;a)
-{
-    out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.x_ &lt;&lt; ',' &lt;&lt; a.y_;
-    return out;
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Vector &amp;a) {
+  out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.x_ &lt;&lt; ',' &lt;&lt; a.y_;
+  return out;
 }
-double Dot(const Vector &amp;a, const Vector &amp;b)
-{
-    return a.x_ * b.x_ + a.y_ * b.y_;
+double Dot(const Vector &amp;a, const Vector &amp;b) {
+  return a.x_ * b.x_ + a.y_ * b.y_;
 }
-double Cross(const Vector &amp;a, const Vector &amp;b)
-{
-    return a.x_ * b.y_ - b.x_ * a.y_;
+double Cross(const Vector &amp;a, const Vector &amp;b) {
+  return a.x_ * b.y_ - b.x_ * a.y_;
 }
-bool IsCcw(const Vector &amp;a, const Vector &amp;b)
-{
-    return Cmp(Cross(a, b)) &gt; 0;
+bool IsCcw(const Vector &amp;a, const Vector &amp;b) { return Cmp(Cross(a, b)) &gt; 0; }
+Vector Rotate(const Vector &amp;a, const double &amp;angle) {
+  return Vector(a.x_ * std::cos(angle) - a.y_ * std::sin(angle),
+                a.x_ * std::sin(angle) + a.y_ * std::cos(angle));
 }
-Vector Rotate(const Vector &amp;a, const double &amp;angle)
-{
-    return Vector(a.x_ * std::cos(angle) - a.y_ * std::sin(angle), a.x_ * std::sin(angle) + a.y_ * std::cos(angle));
+std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Line &amp;a) {
+  Point A, B;
+  in &gt;&gt; A &gt;&gt; B;
+  a = Line(A, Vector(A, B));
+  return in;
 }
-
-std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Line &amp;a)
-{
-    Point A, B;
-    in &gt;&gt; A &gt;&gt; B;
-    a = Line(A, Vector(A, B));
-    return in;
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Line &amp;a) {
+  out &lt;&lt; a.p_ &lt;&lt; ' ' &lt;&lt; a.p_ + a.v_;
+  return out;
 }
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Line &amp;a)
-{
-    out &lt;&lt; a.p_ &lt;&lt; ' ' &lt;&lt; a.p_ + a.v_;
-    return out;
+double Dis(const Point &amp;a, const Line &amp;l) {
+  Vector v(l.p_, a);
+  return std::fabs(Cross(v, l.v_)) / l.v_.Magnitude();
 }
-double Dis(const Point &amp;a, const Line &amp;l)
-{
-    Vector v(l.p_, a);
-    return std::fabs(Cross(v, l.v_)) / l.v_.Magnitude();
+Point Projection(const Point &amp;A, const Line &amp;l) {
+  Vector a(l.p_, A), v = l.v_ * Dot(a, l.v_) / Dot(l.v_, l.v_);
+  return l.p_ + v;
 }
-Point Projection(const Point &amp;A, const Line &amp;l)
-{
-    Vector a(l.p_, A), v = l.v_ * Dot(a, l.v_) / Dot(l.v_, l.v_);
-    return l.p_ + v;
+Point Intersection(const Line &amp;a, const Line &amp;b) {
+  Vector v(a.p_, b.p_);
+  double k = Cross(a.v_, v) / Cross(b.v_, a.v_);
+  return b.p_ + b.v_ * k;
 }
-Point Intersection(const Line &amp;a, const Line &amp;b)
-{
-    Vector v(a.p_, b.p_);
-    double k = Cross(a.v_, v) / Cross(b.v_, a.v_);
-    return b.p_ + b.v_ * k;
+std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Segment &amp;a) {
+  in &gt;&gt; a.a_ &gt;&gt; a.b_;
+  return in;
 }
-
-std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Segment &amp;a)
-{
-    in &gt;&gt; a.a_ &gt;&gt; a.b_;
-    return in;
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Segment &amp;a) {
+  out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.a_ &lt;&lt; ' ' &lt;&lt; a.b_;
+  return out;
 }
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Segment &amp;a)
-{
-    out &lt;&lt; std::setprecision(kPrecision) &lt;&lt; std::fixed &lt;&lt; a.a_ &lt;&lt; ' ' &lt;&lt; a.b_;
-    return out;
+bool IsIntersecting(const Segment &amp;a, const Segment &amp;b) {
+  Vector v1(a.a_, a.b_), v2(b.a_, b.b_);
+  return Cmp(Cross(v1, Vector(a.a_, b.a_))) *
+                 Cmp(Cross(v1, Vector(a.a_, b.b_))) &lt;
+             0 &amp;&amp;
+         Cmp(Cross(v2, Vector(b.a_, a.a_))) *
+                 Cmp(Cross(v2, Vector(b.a_, a.b_))) &lt;
+             0;
 }
-bool IsIntersecting(const Segment &amp;a, const Segment &amp;b)
-{
-    Vector v1(a.a_, a.b_), v2(b.a_, b.b_);
-    return Cmp(Cross(v1, Vector(a.a_, b.a_))) * Cmp(Cross(v1, Vector(a.a_, b.b_))) &lt; 0 &amp;&amp; Cmp(Cross(v2, Vector(b.a_, a.a_))) * Cmp(Cross(v2, Vector(b.a_, a.b_))) &lt; 0;
+Point Intersection(const Segment &amp;a, const Segment &amp;b) {
+  return Intersection(Line(a.a_, Vector(a.a_, a.b_)),
+                      Line(b.a_, Vector(b.a_, b.b_)));
 }
-Point Intersection(const Segment &amp;a, const Segment &amp;b)
-{
-    return Intersection(Line(a.a_, Vector(a.a_, a.b_)), Line(b.a_, Vector(b.a_, b.b_)));
+double Dis(const Point &amp;A, const Segment &amp;b) {
+  Vector v1(b.a_, b.b_), v2(b.a_, A), v3(b.b_, A);
+  if (Cmp(Dot(v1, v2)) &lt; 0)
+    return v2.Magnitude();
+  else if (Cmp(Dot(v1, v3)) &lt; 0)
+    return v3.Magnitude();
+  else
+    return std::fabs(Cross(v1, v2)) / v1.Magnitude();
 }
-double Dis(const Point &amp;A, const Segment &amp;b)
-{
-    Vector v1(b.a_, b.b_), v2(b.a_, A), v3(b.b_, A);
-    if (Cmp(Dot(v1, v2)) &lt; 0)
-    {
-        return v2.Magnitude();
-    }
-    else if (Cmp(Dot(v1, v3)) &lt; 0)
-    {
-        return v3.Magnitude();
-    }
-    else
-    {
-        return std::fabs(Cross(v1, v2)) / v1.Magnitude();
-    }
+Circle::Circle(Point A) {
+  o_ = A;
+  r_ = 0.0;
 }
-
-Circle::Circle(Point A)
-{
-    o_ = A;
-    r_ = 0.0;
+Circle::Circle(Point A, Point B) {
+  o_ = Point((A.x_ + B.x_) / 2, (A.y_ + B.y_) / 2);
+  r_ = Dis(o_, A);
 }
-
-Circle::Circle(Point A, Point B)
-{
-    o_ = Point((A.x_ + B.x_) / 2, (A.y_ + B.y_) / 2);
-    r_ = Dis(o_, A);
+Circle::Circle(Point A, Point B, Point C) {
+  double a, b, c, d, e, f;
+  a = B.y_ - A.y_;
+  b = C.y_ - A.y_;
+  c = B.x_ - A.x_;
+  d = C.x_ - A.x_;
+  f = C.x_ * C.x_ + C.y_ * C.y_ - A.x_ * A.x_ - A.y_ * A.y_;
+  e = B.x_ * B.x_ + B.y_ * B.y_ - A.x_ * A.x_ - A.y_ * A.y_;
+  o_ = Point((a * f - b * e) / (2 * a * d - 2 * b * c),
+             (d * e - c * f) / (2 * a * d - 2 * b * c));
+  r_ = Dis(o_, A);
 }
-
-Circle::Circle(Point A, Point B, Point C)
-{
-    double a, b, c, d, e, f;
-    a = B.y_ - A.y_;
-    b = C.y_ - A.y_;
-    c = B.x_ - A.x_;
-    d = C.x_ - A.x_;
-    f = C.x_ * C.x_ + C.y_ * C.y_ - A.x_ * A.x_ - A.y_ * A.y_;
-    e = B.x_ * B.x_ + B.y_ * B.y_ - A.x_ * A.x_ - A.y_ * A.y_;
-    o_ = Point((a * f - b * e) / (2 * a * d - 2 * b * c), (d * e - c * f) / (2 * a * d - 2 * b * c));
-    r_ = Dis(o_, A);
+std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Circle &amp;a) {
+  in &gt;&gt; a.o_ &gt;&gt; a.r_;
+  return in;
 }
-
-std::istream &amp;operator&gt;&gt;(std::istream &amp;in, Circle &amp;a)
-{
-    in &gt;&gt; a.o_ &gt;&gt; a.r_;
-    return in;
+std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Circle &amp;a) {
+  out &lt;&lt; a.o_ &lt;&lt; ',' &lt;&lt; a.r_;
+  return out;
 }
-
-std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, const Circle &amp;a)
-{
-    out &lt;&lt; a.o_ &lt;&lt; ',' &lt;&lt; a.r_;
-    return out;
+bool InCircle(const Circle &amp;O, const Point &amp;A) {
+  return Cmp(Dis(O.o_, A) - O.r_) &lt;= 0;
 }
-bool InCircle(const Circle &amp;O, const Point &amp;A)
-{
-    return Cmp(Dis(O.o_, A) - O.r_) &lt;= 0;
+Circle InscribedCircle(const Point &amp;A, const Point &amp;B, const Point &amp;C) {
+  double a = Dis(B, C), b = Dis(A, C), c = Dis(A, B), p = (a + b + c) / 2;
+  return Circle(Point((a * A.x_ + b * B.x_ + c * C.x_) / (a + b + c),
+                      (a * A.y_ + b * B.y_ + c * C.y_) / (a + b + c)),
+                sqrt((p - a) * (p - b) * (p - c) / p));
 }
-Circle InscribedCircle(const Point &amp;A, const Point &amp;B, const Point &amp;C)
-{
-    double a = Dis(B, C), b = Dis(A, C), c = Dis(A, B), p = (a + b + c) / 2;
-    return Circle(Point((a * A.x_ + b * B.x_ + c * C.x_) / (a + b + c), (a * A.y_ + b * B.y_ + c * C.y_) / (a + b + c)), sqrt((p - a) * (p - b) * (p - c) / p));
+std::vector&lt;Point&gt; Intersection(const Line &amp;l, const Circle &amp;O) {
+  std::vector&lt;Point&gt; ans;
+  if (Cmp(Dis(O.o_, l) - O.r_) &lt; 0) {
+    Point p = Projection(O.o_, l);
+    double d = Dis(O.o_, p), t = std::sqrt(O.r_ * O.r_ - d * d);
+    Vector v(l.v_ * t / l.v_.Magnitude());
+    ans.emplace_back(p + v);
+    ans.emplace_back(p - v);
+  } else if (!Cmp(Dis(O.o_, l) - O.r_)) {
+    ans.emplace_back(Projection(O.o_, l));
+  }
+  return ans;
 }
-std::vector&lt;Point&gt; Intersection(const Line &amp;l, const Circle &amp;O)
-{
-    std::vector&lt;Point&gt; ans;
-    if (Cmp(Dis(O.o_, l) - O.r_) &lt; 0)
-    {
-        Point p = Projection(O.o_, l);
-        double d = Dis(O.o_, p), t = std::sqrt(O.r_ * O.r_ - d * d);
-        Vector v(l.v_ * t / l.v_.Magnitude());
-        ans.emplace_back(p + v);
-        ans.emplace_back(p - v);
-    }
-    else if (!Cmp(Dis(O.o_, l) - O.r_))
-    {
-        ans.emplace_back(Projection(O.o_, l));
-    }
-    return ans;
+std::vector&lt;Point&gt; Intersection(const Circle &amp;O1, const Circle &amp;O2) {
+  std::vector&lt;Point&gt; ans;
+  double d = Dis(O1.o_, O2.o_);
+  Vector v(O1.o_, O2.o_);
+  if (Cmp(d - O1.r_ - O2.r_) &lt; 0) {
+    double angle =
+        std::acos((O1.r_ * O1.r_ + d * d - O2.r_ * O2.r_) / (2 * O1.r_ * d));
+    ans.emplace_back(O1.o_ + Rotate(v, angle) * O1.r_ / d);
+    ans.emplace_back(O1.o_ + Rotate(v, -angle) * O1.r_ / d);
+  } else if (!Cmp(d - O1.r_ - O2.r_)) {
+    ans.emplace_back(O1.o_ + v * O1.r_ / d);
+  }
+  return ans;
 }
-std::vector&lt;Point&gt; Intersection(const Circle &amp;O1, const Circle &amp;O2)
-{
-    std::vector&lt;Point&gt; ans;
-    double d = Dis(O1.o_, O2.o_);
-    Vector v(O1.o_, O2.o_);
-    if (Cmp(d - O1.r_ - O2.r_) &lt; 0)
-    {
-        double angle = std::acos((O1.r_ * O1.r_ + d * d - O2.r_ * O2.r_) / (2 * O1.r_ * d));
-        ans.emplace_back(O1.o_ + Rotate(v, angle) * O1.r_ / d);
-        ans.emplace_back(O1.o_ + Rotate(v, -angle) * O1.r_ / d);
-    }
-    else if (!Cmp(d - O1.r_ - O2.r_))
-    {
-        ans.emplace_back(O1.o_ + v * O1.r_ / d);
-    }
-    return ans;
+std::vector&lt;Line&gt; Tangents(const Point &amp;P, const Circle &amp;O) {
+  std::vector&lt;Line&gt; ans;
+  Vector a(P, O.o_);
+  double d = a.Magnitude();
+  if (Cmp(d - O.r_) &gt; 0) {
+    double angle = std::asin(O.r_ / d);
+    ans.emplace_back(P, Rotate(a, angle));
+    ans.emplace_back(P, Rotate(a, -angle));
+  } else if (Cmp(d - O.r_) == 0) {
+    ans.emplace_back(P, Rotate(a, M_PI_2));
+  }
+  return ans;
 }
-std::vector&lt;Line&gt; Tangents(const Point &amp;P, const Circle &amp;O)
-{
-    std::vector&lt;Line&gt; ans;
-    Vector a(P, O.o_);
-    double d = a.Magnitude();
-    if (Cmp(d - O.r_) &gt; 0)
-    {
-        double angle = std::asin(O.r_ / d);
-        ans.emplace_back(P, Rotate(a, angle));
-        ans.emplace_back(P, Rotate(a, -angle));
-    }
-    else if (Cmp(d - O.r_) == 0)
-    {
-        ans.emplace_back(P, Rotate(a, M_PI_2));
-    }
-    return ans;
-}
-Circle SmallestCircle(const std::vector&lt;Point&gt; &amp;b)
-{
-    std::vector&lt;Point&gt; a(b);
-    std::srand(std::chrono::_V2::steady_clock::now().time_since_epoch().count());
-    std::random_shuffle(a.begin(), a.end());
-    Circle O(a.front());
-    for (size_t i = 1; i &lt; a.size(); i++)
-    {
-        if (!InCircle(O, a.at(i)))
-        {
-            O = Circle(a.at(i));
-            for (size_t j = 0; j &lt; i; j++)
-            {
-                if (!InCircle(O, a.at(j)))
-                {
-                    O = Circle(a.at(i), a.at(j));
-                    for (size_t k = 0; k &lt; j; k++)
-                    {
-                        if (!InCircle(O, a.at(k)))
-                        {
-                            O = Circle(a.at(i), a.at(j), a.at(k));
-                        }
-                    }
-                }
-            }
+Circle SmallestCircle(const std::vector&lt;Point&gt; &amp;b) {
+  std::vector&lt;Point&gt; a(b);
+  std::mt19937 mt_rand(
+      std::chrono::_V2::steady_clock::now().time_since_epoch().count());
+  std::shuffle(a.begin(), a.end(), mt_rand);
+  Circle O(a.front());
+  for (std::size_t i = 1; i &lt; a.size(); i++)
+    if (!InCircle(O, a[i])) {
+      O = Circle(a[i]);
+      for (std::size_t j = 0; j &lt; i; j++)
+        if (!InCircle(O, a[j])) {
+          O = Circle(a[i], a[j]);
+          for (std::size_t k = 0; k &lt; j; k++)
+            if (!InCircle(O, a[k])) O = Circle(a[i], a[j], a[k]);
         }
     }
-    return O;
+  return O;
 }
-double Area(const Polygon &amp;a)
-{
-    double ans = 0.0;
-    for (size_t i = 1; i &lt; a.size(); i++)
-    {
-        ans += Cross(Vector(a.front(), a.at(i)), Vector(a.front(), a.at(i + 1)));
-    }
-    return ans / 2;
+double Area(const Polygon &amp;a) {
+  double ans = 0.0;
+  for (std::size_t i = 1; i + 1 &lt; a.size(); i++)
+    ans += Cross(Vector(a.front(), a[i]), Vector(a.front(), a[i + 1]));
+  return ans / 2;
 }
-Polygon ConvexHull(const std::vector&lt;Point&gt; &amp;b)
-{
-    std::vector&lt;Point&gt; a(b), s;
-    std::swap(*a.begin(), *std::min_element(a.begin(), a.end(), [](const Point &amp;x, const Point &amp;y) -&gt; bool { return x.y_ &lt; y.y_; }));
-    s.emplace_back(a.at(0));
-    std::sort(a.begin() + 1, a.end(), [&amp;a](const Point &amp;x, const Point &amp;y) -&gt; bool { return IsCcw(Vector(*a.begin(), x), Vector(*a.begin(), y)); });
-    s.emplace_back(a.at(1));
-    int top = 1;
-    for (size_t i = 2; i &lt; a.size(); i++)
-    {
-        while (top &amp;&amp; !IsCcw(Vector(s.at(top - 1), s.back()), Vector(s.at(top - 1), a.at(i))))
-        {
-            s.pop_back();
-            top--;
-        }
-        s.emplace_back(a.at(i));
-        top++;
+Polygon ConvexHull(const std::vector&lt;Point&gt; &amp;b) {
+  std::vector&lt;Point&gt; a(b), s;
+  std::swap(*a.begin(),
+            *std::min_element(a.begin(), a.end(),
+                              [](const Point &amp;x, const Point &amp;y) -&gt; bool {
+                                return x.y_ &lt; y.y_;
+                              }));
+  s.emplace_back(a[0]);
+  std::sort(a.begin() + 1, a.end(),
+            [&amp;a](const Point &amp;x, const Point &amp;y) -&gt; bool {
+              return IsCcw(Vector(*a.begin(), x), Vector(*a.begin(), y));
+            });
+  s.emplace_back(a[1]);
+  int top = 1;
+  for (std::size_t i = 2; i &lt; a.size(); i++) {
+    while (top &amp;&amp;
+           !IsCcw(Vector(s[top - 1], s.back()), Vector(s[top - 1], a[i]))) {
+      s.pop_back();
+      top--;
     }
-    return s;
+    s.emplace_back(a[i]);
+    top++;
+  }
+  return s;
 }
 </code></pre>
 
