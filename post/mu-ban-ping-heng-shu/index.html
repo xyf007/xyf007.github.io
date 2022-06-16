@@ -1,0 +1,971 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>【模板】平衡树 | 虫合&#39;s Blog</title>
+
+<link rel="shortcut icon" href="http://xyf007.ml/favicon.ico?v=1655342925381">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="http://xyf007.ml/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-161627478-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-161627478-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            虫合&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/friends" class="menu gt-a-link">
+                    友链
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1655342925381"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    【模板】平衡树
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-25 ·
+                    </time>
+                    
+                        <a href="http://xyf007.ml/tag/bjCRJrLyw/" class="post-tags">
+                            # 模板
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <ul>
+<li>treap</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;ctime&gt;
+using namespace std;
+struct node
+{
+    int size, val, sum, son[2], rd;
+} a[100001];
+int n, root, num;
+void pushup(int p)
+{
+    a[p].size = a[a[p].son[0]].size + a[a[p].son[1]].size + a[p].sum;
+}
+void rotate(int &amp;p, int d)
+{
+    int temp = a[p].son[d ^ 1];
+    a[p].son[d ^ 1] = a[temp].son[d];
+    a[temp].son[d] = p;
+    pushup(p);
+    pushup(temp);
+    p = temp;
+}
+void insert(int &amp;p, int x)
+{
+    if (!p)
+    {
+        p = ++num;
+        a[p].size = a[p].sum = 1;
+        a[p].val = x;
+        a[p].rd = rand();
+        return;
+    }
+    if (a[p].val == x)
+    {
+        a[p].sum++;
+        a[p].size++;
+        return;
+    }
+    int d = (x &gt; a[p].val);
+    insert(a[p].son[d], x);
+    if (a[p].rd &lt; a[a[p].son[d]].rd)
+    {
+        rotate(p, d ^ 1);
+    }
+    pushup(p);
+}
+void erase(int &amp;p, int x)
+{
+    if (!p)
+    {
+        return;
+    }
+    if (x &lt; a[p].val)
+    {
+        erase(a[p].son[0], x);
+    }
+    else
+    {
+        if (x &gt; a[p].val)
+        {
+            erase(a[p].son[1], x);
+        }
+        else
+        {
+            if (!a[p].son[0] &amp;&amp; !a[p].son[1])
+            {
+                a[p].size--;
+                a[p].sum--;
+                if (!a[p].sum)
+                {
+                    p = 0;
+                }
+            }
+            else
+            {
+                if (!a[p].son[0] &amp;&amp; a[p].son[1])
+                {
+                    rotate(p, 0);
+                    erase(a[p].son[0], x);
+                }
+                else
+                {
+                    if (a[p].son[0] &amp;&amp; !a[p].son[1])
+                    {
+                        rotate(p, 1);
+                        erase(a[p].son[1], x);
+                    }
+                    else
+                    {
+                        int d = (a[a[p].son[0]].rd &gt; a[a[p].son[1]].rd);
+                        rotate(p, d);
+                        erase(a[p].son[d], x);
+                    }
+                }
+            }
+        }
+    }
+    pushup(p);
+}
+int rank(int p,int x)
+{
+    if (!p)
+    {
+        return 0;
+    }
+    if (x &lt; a[p].val)
+    {
+        return rank(a[p].son[0], x);
+    }
+    if (x &gt; a[p].val)
+    {
+        return a[a[p].son[0]].size + a[p].sum + rank(a[p].son[1], x);
+    }
+    return a[a[p].son[0]].size + 1;
+}
+int find(int p, int x)
+{
+    if (!p)
+    {
+        return 0;
+    }
+    if (a[a[p].son[0]].size &gt;= x)
+    {
+        return find(a[p].son[0], x);
+    }
+    if (a[a[p].son[0]].size + a[p].sum &lt; x)
+    {
+        return find(a[p].son[1], x - a[a[p].son[0]].size - a[p].sum);
+    }
+    return a[p].val;
+}
+int pre(int p, int x)
+{
+    if (!p)
+    {
+        return -2147483647;
+    }
+    if (a[p].val &gt;= x)
+    {
+        return pre(a[p].son[0], x);
+    }
+    else
+    {
+        return max(a[p].val, pre(a[p].son[1], x));
+    }
+}
+int suf(int p, int x)
+{
+    if (!p)
+    {
+        return 2147483647;
+    }
+    if (a[p].val &lt;= x)
+    {
+        return suf(a[p].son[1], x);
+    }
+    else
+    {
+        return min(a[p].val, suf(a[p].son[0], x));
+    }
+}
+int main()
+{
+    srand(time(NULL));
+    scanf(&quot;%d&quot;, &amp;n);
+    for (int i = 1; i &lt;= n; i++)
+    {
+        int opt, x;
+        scanf(&quot;%d%d&quot;, &amp;opt, &amp;x);
+        switch (opt)
+        {
+            case 1:
+                insert(root, x);
+                break;
+            case 2:
+                erase(root, x);
+                break;
+            case 3:
+                printf(&quot;%d\n&quot;, rank(root, x));
+                break;
+            case 4:
+                printf(&quot;%d\n&quot;, find(root, x));
+                break;
+            case 5:
+                printf(&quot;%d\n&quot;, pre(root, x));
+                break;
+            default:
+                printf(&quot;%d\n&quot;, suf(root,x));
+                break;
+        }
+    }
+    return 0;
+}
+</code></pre>
+<ul>
+<li>splay</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+using namespace std;
+struct node
+{
+    int son[2], val, size, sum, fa;
+} a[100001];
+int n, root, tot;
+int check(int x)
+{
+    return a[a[x].fa].son[1] == x;
+}
+void pushup(int x)
+{
+    a[x].size = a[a[x].son[0]].size + a[a[x].son[1]].size + a[x].sum;
+}
+void rotate(int x)
+{
+    int y = a[x].fa, z = a[y].fa, d1 = check(x), d2 = check(y), son = a[x].son[d1 ^ 1];
+    a[y].son[d1] = son;
+    a[son].fa = y;
+    a[z].son[d2] = x;
+    a[x].fa = z;
+    a[x].son[d1 ^ 1] = y;
+    a[y].fa = x;
+    pushup(y);
+    pushup(x);
+}
+void splay(int x, int goal)
+{
+    while (a[x].fa != goal)
+    {
+        int y = a[x].fa, z = a[y].fa, d1 = check(x), d2 = check(y);
+        if (z != goal)
+        {
+            if (d1 == d2)
+            {
+                rotate(y);
+            }
+            else
+            {
+                rotate(x);
+            }
+        }
+        rotate(x);
+    }
+    if (!goal)
+    {
+        root = x;
+    }
+}
+void search(int x)
+{
+    int p = root;
+    if (!p)
+    {
+        return;
+    }
+    while (a[p].son[a[p].val &lt; x] &amp;&amp; a[p].val != x)
+    {
+        p = a[p].son[a[p].val &lt; x];
+    }
+    splay(p, 0);
+}
+void insert(int x)
+{
+    int p = root, fa = 0;
+    while (p &amp;&amp; a[p].val != x)
+    {
+        fa = p;
+        p = a[p].son[a[p].val &lt; x];
+    }
+    if (p)
+    {
+        a[p].sum++;
+    }
+    else
+    {
+        p = ++tot;
+        if (fa)
+        {
+            a[fa].son[a[fa].val &lt; x] = p;
+        }
+        a[p].son[0] = a[p].son[1] = 0;
+        a[p].val = x;
+        a[p].sum = a[p].size = 1;
+        a[p].fa = fa;
+    }
+    splay(p, 0);
+}
+int rank(int x)
+{
+    search(x);
+    return a[a[root].son[0]].size;
+}
+int find(int x)
+{
+    int p = root;
+    while (1)
+    {
+        if (a[p].son[0] &amp;&amp; x &lt;= a[a[p].son[0]].size)
+        {
+            p = a[p].son[0];
+        }
+        else
+        {
+            if (x &gt; a[a[p].son[0]].size + a[p].sum)
+            {
+                x -= a[a[p].son[0]].size + a[p].sum;
+                p = a[p].son[1];
+            }
+            else
+            {
+                return p;
+            }
+        }
+    }
+}
+int pre(int x)
+{
+    search(x);
+    if (a[root].val &lt; x)
+    {
+        return root;
+    }
+    int p = a[root].son[0];
+    while (a[p].son[1])
+    {
+        p = a[p].son[1];
+    }
+    return p;
+}
+int suf(int x)
+{
+    search(x);
+    if (a[root].val &gt; x)
+    {
+        return root;
+    }
+    int p = a[root].son[1];
+    while (a[p].son[0])
+    {
+        p = a[p].son[0];
+    }
+    return p;
+}
+void erase(int x)
+{
+    int prefix = pre(x), suffix = suf(x);
+    splay(prefix, 0);
+    splay(suffix, prefix);
+    int now = a[suffix].son[0];
+    if (a[now].sum &gt; 1)
+    {
+        a[now].sum--;
+        splay(now, 0);
+    }
+    else
+    {
+        a[suffix].son[0] = 0;
+    }
+}
+int main()
+{
+    scanf(&quot;%d&quot;, &amp;n);
+    insert(0x3f3f3f3f);
+    insert(0xcfcfcfcf);
+    for (int i = 1; i &lt;= n; i++)
+    {
+        int op, x;
+        scanf(&quot;%d%d&quot;, &amp;op, &amp;x);
+        switch (op)
+        {
+            case 1:
+                insert(x);
+                break;
+            case 2:
+                erase(x);
+                break;
+            case 3:
+                printf(&quot;%d\n&quot;, rank(x));
+                break;
+            case 4:
+                printf(&quot;%d\n&quot;, a[find(x + 1)].val);
+                break;
+            case 5:
+                printf(&quot;%d\n&quot;, a[pre(x)].val);
+                break;
+            default:
+                printf(&quot;%d\n&quot;, a[suf(x)].val);
+                break;
+        }
+    }
+    return 0;
+}
+</code></pre>
+<ul>
+<li>fhq_treap</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;ctime&gt;
+using namespace std;
+int n, sz[100001], val[100001], ch[100001][2], rd[100001], root, tot;
+int newnode(int x)
+{
+    sz[++tot] = 1;
+    val[tot] = x;
+    rd[tot] = rand();
+    return tot;
+}
+void pushup(int p)
+{
+    sz[p] = sz[ch[p][0]] + sz[ch[p][1]] + 1;
+}
+void split(int p, int now, int &amp;x, int &amp;y)
+{
+    if (!p)
+    {
+        x = y = 0;
+        return;
+    }
+    if (now &gt;= val[p])
+    {
+        x = p;
+        split(ch[p][1], now, ch[p][1], y);
+    }
+    else
+    {
+        y = p;
+        split(ch[p][0], now, x, ch[p][0]);
+    }
+    pushup(p);
+}
+int merge(int x, int y)
+{
+    if (!x || !y)
+    {
+        return x + y;
+    }
+    if (rd[x] &lt; rd[y])
+    {
+        ch[x][1] = merge(ch[x][1], y);
+        pushup(x);
+        return x;
+    }
+    else
+    {
+        ch[y][0] = merge(x, ch[y][0]);
+        pushup(y);
+        return y;
+    }
+}
+int kth(int p, int k)
+{
+    if (!p)
+    {
+        return 0;
+    }
+    if (sz[ch[p][0]] &gt;= k)
+    {
+        return kth(ch[p][0], k);
+    }
+    else
+    {
+        if (k == sz[ch[p][0]] + 1)
+        {
+            return p;
+        }
+        return kth(ch[p][1], k - sz[ch[p][0]] - 1);
+    }
+}
+int main(int argc, char const *argv[])
+{
+    srand(time(0));
+    scanf(&quot;%d&quot;, &amp;n);
+    int x, y, z;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        int op, k;
+        scanf(&quot;%d%d&quot;, &amp;op, &amp;k);
+        switch (op)
+        {
+        case 1:
+            split(root, k, x, y);
+            root = merge(merge(x, newnode(k)), y);
+            break;
+        case 2:
+            split(root, k, x, y);
+            split(x, k - 1, x, z);
+            z = merge(ch[z][0], ch[z][1]);
+            root = merge(merge(x, z), y);
+            break;
+        case 3:
+            split(root, k - 1, x, y);
+            printf(&quot;%d\n&quot;, sz[x] + 1);
+            root = merge(x, y);
+            break;
+        case 4:
+            printf(&quot;%d\n&quot;, val[kth(root, k)]);
+            break;
+        case 5:
+            split(root, k - 1, x, y);
+            printf(&quot;%d\n&quot;, val[kth(x, sz[x])]);
+            root = merge(x, y);
+            break;
+        default:
+            split(root, k, x, y);
+            printf(&quot;%d\n&quot;, val[kth(y, 1)]);
+            root = merge(x, y);
+            break;
+        }
+    }
+    return 0;
+}
+</code></pre>
+<ul>
+<li>替罪羊树</li>
+</ul>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;numeric&gt;
+#include &lt;cassert&gt;
+constexpr double kAlpha = 0.75;
+struct node
+{
+    int ls, rs, sz, tot, val;
+    bool exist;
+} t[2000001];
+int n, tmp[2000001], cnt, root, pool[2000001], top;
+bool Check(int x)
+{
+    return t[t[x].ls].sz &lt;= t[x].sz * kAlpha &amp;&amp; t[t[x].rs].sz &lt;= t[x].sz * kAlpha;
+}
+void pushup(int x)
+{
+    t[x].sz = t[t[x].ls].sz + t[t[x].rs].sz + t[x].exist;
+    t[x].tot = t[t[x].ls].tot + t[t[x].rs].tot + 1;
+}
+void Dfs(int x)
+{
+    if (!x)
+    {
+        return;
+    }
+    Dfs(t[x].ls);
+    if (t[x].exist)
+    {
+        tmp[++cnt] = x;
+    }
+    else
+    {
+        pool[++top] = x;
+    }
+    Dfs(t[x].rs);
+}
+int Build(int l, int r)
+{
+    if (l &gt; r)
+    {
+        return 0;
+    }
+    if (l == r)
+    {
+        t[tmp[l]].ls = t[tmp[l]].rs = 0;
+        t[tmp[l]].sz = t[tmp[l]].tot = 1;
+        return tmp[l];
+    }
+    int mid = (l + r) &gt;&gt; 1, x = tmp[mid];
+    t[x].ls = Build(l, mid - 1);
+    t[x].rs = Build(mid + 1, r);
+    pushup(x);
+    return x;
+}
+void Rebuild(int &amp;x)
+{
+    cnt = 0;
+    Dfs(x);
+    if (cnt)
+    {
+        x = Build(1, cnt);
+    }
+    else
+    {
+        x = 0;
+    }
+}
+void Insert(int &amp;p, int x)
+{
+    if (!p)
+    {
+        p = pool[top--];
+        t[p].val = x;
+        t[p].ls = t[p].rs = 0;
+        t[p].sz = t[p].tot = 1;
+        t[p].exist = true;
+        return;
+    }
+    t[p].sz++;
+    t[p].tot++;
+    if (t[p].val &gt;= x)
+    {
+        Insert(t[p].ls, x);
+    }
+    else
+    {
+        Insert(t[p].rs, x);
+    }
+    if (!Check(p))
+    {
+        Rebuild(p);
+    }
+}
+int calc_rank(int x)
+{
+    int p = root, ans = 1;
+    while (p)
+    {
+        if (t[p].val &gt;= x)
+        {
+            p = t[p].ls;
+        }
+        else
+        {
+            ans += t[t[p].ls].sz + t[p].exist;
+            p = t[p].rs;
+        }
+    }
+    return ans;
+}
+int kth(int x)
+{
+    int p = root;
+    while (p)
+    {
+        if (t[p].exist &amp;&amp; x == t[t[p].ls].sz + 1)
+        {
+            return t[p].val;
+        }
+        else if (t[t[p].ls].sz &gt;= x)
+        {
+            p = t[p].ls;
+        }
+        else
+        {
+            x -= t[t[p].ls].sz + t[p].exist;
+            p = t[p].rs;
+        }
+    }
+    return 0;
+}
+void Delete(int p, int x)
+{
+    if (t[p].exist &amp;&amp; t[t[p].ls].sz + 1 == x)
+    {
+        t[p].exist = false;
+        t[p].sz--;
+        return;
+    }
+    t[p].sz--;
+    if (t[t[p].ls].sz + t[p].exist &gt;= x)
+    {
+        Delete(t[p].ls, x);
+    }
+    else
+    {
+        Delete(t[p].rs, x - t[t[p].ls].sz - t[p].exist);
+    }
+}
+int main(int argc, char const *argv[])
+{
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::iota(pool + 1, pool + 2000001, 1);
+    top = 2000000;
+    std::cin &gt;&gt; n;
+    for (int i = 1; i &lt;= n; i++)
+    {
+        int op, x;
+        std::cin &gt;&gt; op &gt;&gt; x;
+        switch (op)
+        {
+        case 1:
+            Insert(root, x);
+            break;
+        case 2:
+            Delete(root, calc_rank(x));
+            if (t[root].sz &lt; t[root].tot * kAlpha)
+            {
+                Rebuild(root);
+            }
+            break;
+        case 3:
+            std::cout &lt;&lt; calc_rank(x) &lt;&lt; '\n';
+            break;
+        case 4:
+            std::cout &lt;&lt; kth(x) &lt;&lt; '\n';
+            break;
+        case 5:
+            std::cout &lt;&lt; kth(calc_rank(x) - 1) &lt;&lt; '\n';
+            break;
+        case 6:
+            std::cout &lt;&lt; kth(calc_rank(x + 1)) &lt;&lt; '\n';
+            break;
+        default:
+            assert(false);
+            break;
+        }
+    }
+    return 0;
+}
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="http://xyf007.ml/post/mu-ban-ac-zi-dong-ji/" class="post-title gt-a-link">
+                    【模板】AC 自动机
+                </a>
+            </div>
+        
+
+        
+
+        
+            
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+<script>
+    // md5.min.js
+    !function(n){
+        "use strict";
+        function d(n,t){var r=(65535&n)+(65535&t);return(n>>16)+(t>>16)+(r>>16)<<16|65535&r}
+        function f(n,t,r,e,o,u){return d((c=d(d(t,n),d(e,u)))<<(f=o)|c>>>32-f,r);var c,f}
+        function l(n,t,r,e,o,u,c){return f(t&r|~t&e,n,t,o,u,c)}
+        function v(n,t,r,e,o,u,c){return f(t&e|r&~e,n,t,o,u,c)}
+        function g(n,t,r,e,o,u,c){return f(t^r^e,n,t,o,u,c)}
+        function m(n,t,r,e,o,u,c){return f(r^(t|~e),n,t,o,u,c)}
+        function i(n,t){var r,e,o,u,c;n[t>>5]|=128<<t%32,n[14+(t+64>>>9<<4)]=t;var f=1732584193,i=-271733879,a=-1732584194,h=271733878;for(r=0;r<n.length;r+=16)f=l(e=f,o=i,u=a,c=h,n[r],7,-680876936),h=l(h,f,i,a,n[r+1],12,-389564586),a=l(a,h,f,i,n[r+2],17,606105819),i=l(i,a,h,f,n[r+3],22,-1044525330),f=l(f,i,a,h,n[r+4],7,-176418897),h=l(h,f,i,a,n[r+5],12,1200080426),a=l(a,h,f,i,n[r+6],17,-1473231341),i=l(i,a,h,f,n[r+7],22,-45705983),f=l(f,i,a,h,n[r+8],7,1770035416),h=l(h,f,i,a,n[r+9],12,-1958414417),a=l(a,h,f,i,n[r+10],17,-42063),i=l(i,a,h,f,n[r+11],22,-1990404162),f=l(f,i,a,h,n[r+12],7,1804603682),h=l(h,f,i,a,n[r+13],12,-40341101),a=l(a,h,f,i,n[r+14],17,-1502002290),f=v(f,i=l(i,a,h,f,n[r+15],22,1236535329),a,h,n[r+1],5,-165796510),h=v(h,f,i,a,n[r+6],9,-1069501632),a=v(a,h,f,i,n[r+11],14,643717713),i=v(i,a,h,f,n[r],20,-373897302),f=v(f,i,a,h,n[r+5],5,-701558691),h=v(h,f,i,a,n[r+10],9,38016083),a=v(a,h,f,i,n[r+15],14,-660478335),i=v(i,a,h,f,n[r+4],20,-405537848),f=v(f,i,a,h,n[r+9],5,568446438),h=v(h,f,i,a,n[r+14],9,-1019803690),a=v(a,h,f,i,n[r+3],14,-187363961),i=v(i,a,h,f,n[r+8],20,1163531501),f=v(f,i,a,h,n[r+13],5,-1444681467),h=v(h,f,i,a,n[r+2],9,-51403784),a=v(a,h,f,i,n[r+7],14,1735328473),f=g(f,i=v(i,a,h,f,n[r+12],20,-1926607734),a,h,n[r+5],4,-378558),h=g(h,f,i,a,n[r+8],11,-2022574463),a=g(a,h,f,i,n[r+11],16,1839030562),i=g(i,a,h,f,n[r+14],23,-35309556),f=g(f,i,a,h,n[r+1],4,-1530992060),h=g(h,f,i,a,n[r+4],11,1272893353),a=g(a,h,f,i,n[r+7],16,-155497632),i=g(i,a,h,f,n[r+10],23,-1094730640),f=g(f,i,a,h,n[r+13],4,681279174),h=g(h,f,i,a,n[r],11,-358537222),a=g(a,h,f,i,n[r+3],16,-722521979),i=g(i,a,h,f,n[r+6],23,76029189),f=g(f,i,a,h,n[r+9],4,-640364487),h=g(h,f,i,a,n[r+12],11,-421815835),a=g(a,h,f,i,n[r+15],16,530742520),f=m(f,i=g(i,a,h,f,n[r+2],23,-995338651),a,h,n[r],6,-198630844),h=m(h,f,i,a,n[r+7],10,1126891415),a=m(a,h,f,i,n[r+14],15,-1416354905),i=m(i,a,h,f,n[r+5],21,-57434055),f=m(f,i,a,h,n[r+12],6,1700485571),h=m(h,f,i,a,n[r+3],10,-1894986606),a=m(a,h,f,i,n[r+10],15,-1051523),i=m(i,a,h,f,n[r+1],21,-2054922799),f=m(f,i,a,h,n[r+8],6,1873313359),h=m(h,f,i,a,n[r+15],10,-30611744),a=m(a,h,f,i,n[r+6],15,-1560198380),i=m(i,a,h,f,n[r+13],21,1309151649),f=m(f,i,a,h,n[r+4],6,-145523070),h=m(h,f,i,a,n[r+11],10,-1120210379),a=m(a,h,f,i,n[r+2],15,718787259),i=m(i,a,h,f,n[r+9],21,-343485551),f=d(f,e),i=d(i,o),a=d(a,u),h=d(h,c);return[f,i,a,h]}
+        function a(n){var t,r="",e=32*n.length;for(t=0;t<e;t+=8)r+=String.fromCharCode(n[t>>5]>>>t%32&255);return r}
+        function h(n){var t,r=[];for(r[(n.length>>2)-1]=void 0,t=0;t<r.length;t+=1)r[t]=0;var e=8*n.length;for(t=0;t<e;t+=8)r[t>>5]|=(255&n.charCodeAt(t/8))<<t%32;return r}
+        function e(n){var t,r,e="0123456789abcdef",o="";for(r=0;r<n.length;r+=1)t=n.charCodeAt(r),o+=e.charAt(t>>>4&15)+e.charAt(15&t);return o}
+        function r(n){return unescape(encodeURIComponent(n))}
+        function o(n){return a(i(h(t=r(n)),8*t.length));var t}
+        function u(n,t){return function(n,t){var r,e,o=h(n),u=[],c=[];for(u[15]=c[15]=void 0,16<o.length&&(o=i(o,8*n.length)),r=0;r<16;r+=1)u[r]=909522486^o[r],c[r]=1549556828^o[r];return e=i(u.concat(h(t)),512+8*t.length),a(i(c.concat(e),640))}(r(n),r(t))}
+        function t(n,t,r){return t?r?u(t,n):e(u(t,n)):r?o(n):e(o(n))}
+        "function"==typeof define&&define.amd?define(function(){return t}):"object"==typeof module&&module.exports?module.exports=t:n.md5=t;
+    }(this);
+</script>
+
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '1e05b75013c91e91f40c',
+    clientSecret: '0befe3438ad37a97152245ba883f24f1eba9e379',
+    repo: 'xyf007.github.io',
+    owner: 'xyf007',
+    admin: ['xyf007'],
+    id: md5(location.pathname),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false       // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">蒟蒻的博客</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/xyf007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+                <a href="https://twitter.com/xyf007" target="_blank">
+                    <i class="fab fa-twitter gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://www.zhihu.com/people/xyf007-47" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="http://xyf007.ml/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
